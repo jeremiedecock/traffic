@@ -2,79 +2,84 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 import numpy as np
 import time
-import urllib2
+import json
 from matplotlib.dates import DateFormatter
 
+try:
+    # For Python 3.0 and later
+    from urllib.request import urlopen
+except ImportError:
+    # Fall back to Python 2's urllib2
+    from urllib2 import urlopen
+
 def getduration(myurl):
-    info = urllib2.urlopen(myurl)
-    content = info.read()
-    index=content.find('Dans les conditions actuelles de circulation')
-    substring=content[index+47:index+61]
-#    substring='1 heure 9 min'
-    print substring
-    index_min=substring.find('min') ; print index_min
-    index_hour=substring.find('heure') ; print index_hour
-    hours=0
-    minutes=0
-    if index_hour > 0:
-        hours=substring[index_hour-2:index_hour-1]
-        print 'hours = ', hours
-    if index_min > 0:
-        minutes=substring[index_min-3:index_min-1]
-        print 'minutes = ', minutes
-    duration = float(hours)*60 + float(minutes)    
-    return  duration
+    content = urlopen(myurl).read().decode('utf8')
+    data = json.loads(content)
+    duration=data['rows'][0]['elements'][0]['duration_in_traffic']['value']
+    return  duration/60.
 
-myurl='https://www.google.fr/maps/dir/Orsay/Paris/'
 
+
+origin='Orsay'
+destination='Paris'
+APIkey=np.genfromtxt('api.key',dtype='unicode')
+
+myurl='https://maps.googleapis.com/maps/api/distancematrix/json?origins=%s&destinations=%s&departure_time=now&traffic_model=best_guess&key=%s'%(origin,destination,APIkey)
+plot=False
 
 
 waittime=180 # in secs
 
 now= datetime.now()
-endhour=20
-endmin=00
+endhour=21
+endmin=0
 end=now.replace(hour=endhour, minute=endmin,second=0,microsecond=0)
 
 times=[]
 durations=[]
 
-# plt.plot(now,35)
-# plt.plot(end,70)
-# plt.gcf().autofmt_xdate()
-# formatter = DateFormatter('%H:%M')
-# plt.gcf().axes[0].xaxis.set_major_formatter(formatter)
-# plt.ion()
-# plt.xlabel('Time')
-# plt.ylabel('Trip duration in current traffic')
-# plt.show()
+
+
+if plot == True:
+    fig,ax = plt.subplots(1, 1, figsize=(15,7.5))  
+    ax.plot(now,35)
+    ax.plot(end,80)
+    fig.autofmt_xdate()
+    formatter = DateFormatter('%H:%M')
+    ax.xaxis.set_major_formatter(formatter)
+    plt.ion()
+    ax.set_xlabel('Time (mn)')
+    ax.set_ylabel('Trip duration in current traffic')
+    plt.draw()
 
 
 myfile='traffic-archive/traffic_'+now.strftime('%Y-%m-%d')+'.dat'
 f = open(myfile, 'w')
 f.close()
 
-print 'NOW=', now
-print 'END time =', end
+print('\n \n')
+print('NOW=', now)
+print('END time =', end)
 while now < end:
     date=datetime.now()
     datestr=date.strftime('%Y-%m-%d %H:%M:%S')
     duration=getduration(myurl)
 
-    print 'Trafic time at %s =>  %s min' %(datestr, duration)
-    data='%s %s \n'%(datestr, duration)
+    print( 'Trafic time at %s =>  %.1f mn'%(datestr, duration) )
+    data='%s %.1f \n'%(datestr, duration)
     f = open(myfile, 'a')
     f.write(data)
     f.close()
     
     durations.append( duration )
     times.append( date )
-#     plt.plot(date, duration, 'ro')
-#     plt.gcf().autofmt_xdate()
-#     plt.draw()
-
     
-    time.sleep(waittime)
+    if plot == True:
+        ax.plot(date, duration, 'ro')
+        fig.autofmt_xdate()
+
+
+    plt.pause(waittime)
     now= datetime.now()
 
 
