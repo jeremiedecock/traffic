@@ -14,7 +14,7 @@ api_key = np.genfromtxt('api.key', dtype='unicode')
 # TODO: put the 4 next variables in an external configuration file
 #origin = 'Greenwich,England'
 #destination = 'Stockholm,Sweden'
-origin = '48.8598263,2.3156588'     # GPS coordinates
+origin = '48.874016,2.295109'     # GPS coordinates
 destination = '48.853157,2.369259'  # GPS coordinates
 request_url = 'https://maps.googleapis.com/maps/api/distancematrix/json?origins=%s&destinations=%s&departure_time=now&traffic_model=best_guess&key=%s' % (origin, destination, api_key)
 wait_time_sec = 180  # in secs
