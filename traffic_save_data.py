@@ -3,30 +3,18 @@
 
 import numpy as np
 import json
+import os
+import yaml
 import time
+import argparse
 
 from datetime import datetime
 from urllib.request import urlopen
 
 # TODO
-# - fix the datetime format
-# - use a configuration file
-# - allow multiple recording per day
-#   - change the stop criteria (duration instead end time) ?
 # - allow multiple paths per request (+ mention the path id in the csv file...) -> one configuration file per path ?
 # - set way points
 # - finish the plot script
-
-# Get the Google Maps API private key
-api_key = np.genfromtxt('api.key', dtype='unicode')
-
-# TODO: put the 4 next variables in an external configuration file
-#origin = 'Greenwich,England'
-#destination = 'Stockholm,Sweden'
-origin = '48.874016,2.295109'       # GPS coordinates
-destination = '48.853157,2.369259'  # GPS coordinates
-request_url = 'https://maps.googleapis.com/maps/api/distancematrix/json?origins=%s&destinations=%s&departure_time=now&traffic_model=best_guess&key=%s' % (origin, destination, api_key)
-wait_time_sec = 180  # in secs
 
 def get_duration(request_url):
     content = urlopen(request_url).read().decode('utf8')
@@ -35,38 +23,58 @@ def get_duration(request_url):
     duration = data['rows'][0]['elements'][0]['duration_in_traffic']['value']
     return duration / 60.
 
-# TODO: improve the next 3 lines: set a duration instead a end time and make it configurable to be able to launch the script several times per day with different durations...
-now = datetime.now()
-end_hour, end_min = 13, 0
-end = now.replace(hour=end_hour, minute=end_min, second=0, microsecond=0)
 
-times = []
-durations = []
+def record_traffic(config):
 
-# TODO: improve the next 3 lines (create the data file)...
-data_file = 'traffic_archive/traffic_' + now.strftime('%Y-%m-%d_%H-%M') + '.csv'
-fd = open(data_file, 'w')
-fd.close()
+    # Get the Google Maps API private key
+    api_key = np.genfromtxt(config['google_maps_api_key'], dtype='unicode')
 
-print('\n\n')
-print('NOW =', now)
-print('END TIME =', end)
-
-while now < end:
-    date = datetime.now()
-    date_str = date.strftime("%Y-%m-%d %H:%M:%S")
-    duration = get_duration(request_url)
-
-    print("Trafic time at {}: {:0.1f} mn".format(date_str, duration))
-    data = "{}: {:0.1f}\n".format(date_str, duration)
-
-    fd = open(data_file, 'a')
-    fd.write(data)
-    fd.close()
-
-    durations.append(duration)
-    times.append(date)
-
-    time.sleep(wait_time_sec)
+    request_url = 'https://maps.googleapis.com/maps/api/distancematrix/json?origins=%s&destinations=%s&departure_time=now&traffic_model=best_guess&key=%s' % (config['origin'], config['destination'], api_key)
 
     now = datetime.now()
+    end_hour, end_min = config['end_time']['hour'], config['end_time']['minute']
+    end_time = now.replace(hour=end_hour, minute=end_min, second=0, microsecond=0)
+
+    data_file = "{}_{}.csv".format(config['path_id'], now.strftime('%Y-%m-%d_%H-%M'))
+    data_path = os.path.join(config['data_directory'], data_file)
+
+    # TODO: improve the next 2 lines (create the data file)...
+    fd = open(data_path, 'w')
+    fd.close()
+
+    print()
+    print('NOW =', now)
+    print('END TIME =', end_time)
+
+    while now < end_time:
+        date_str = datetime.now().isoformat()
+        duration = get_duration(request_url)
+
+        print("{} -> trafic time at {}: {:0.1f} mn".format(config['path_id'], date_str, duration))
+        data = "{} {:0.1f}\n".format(date_str, duration)
+
+        fd = open(data_path, 'a')
+        fd.write(data)
+        fd.close()
+
+        time.sleep(config['wait_time_sec'])
+
+        now = datetime.now()
+
+
+def main():
+    parser = argparse.ArgumentParser(description='An argparse snippet.')
+
+    parser.add_argument("--config", "-c", required=True, metavar="STRING",
+            help="The path of the YAML configuration file.")
+
+    args = parser.parse_args()
+
+    with open(args.config) as stream:
+        config_dict = yaml.load(stream)
+
+    record_traffic(config_dict)
+
+if __name__ == '__main__':
+    main()
+

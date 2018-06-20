@@ -1,0 +1,11 @@
+path_id: "Paris_Etoile_Bastille"
+data_directory: "traffic_archive"
+google_maps_api_key: "api.key"
+origin: "48.874016,2.295109"
+#origin = "Greenwich,England"
+destination: "48.853157,2.369259"
+#destination = "Stockholm,Sweden"
+wait_time_sec: 180
+end_time:
+    hour: 19
+    minute: 0

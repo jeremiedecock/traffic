@@ -1,22 +1,37 @@
-import matplotlib.pyplot as plt
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import pandas as pd
+import argparse
 
 from matplotlib.dates import DateFormatter
 
-# TODO: parse data files to fill the next two variables...
-# TODO: parse and plot data with Pandas...
-times = []
-durations = []
+def plot_traffic(file_path_list):
+    print(file_path_list)
 
-fig, ax = plt.subplots(1, 1, figsize=(15, 7.5))
+    df = pd.concat((pd.read_csv(file_path) for file_path in file_path_list), ignore_index=True)
+    print(df)
 
-fig.autofmt_xdate()
-formatter = DateFormatter('%H:%M')
-ax.xaxis.set_major_formatter(formatter)
+    #df.plot(x='datetime', y='duration')
 
-ax.plot(times, durations, 'ro')
+    #fig.autofmt_xdate()
+    #formatter = DateFormatter('%H:%M')
+    #ax.xaxis.set_major_formatter(formatter)
+    #ax.plot(times, durations, 'ro')
+    #ax.set_xlabel('Time (mn)')
+    #ax.set_ylabel('Trip duration in current traffic')
+    ## TODO: save figure in a png file ?
 
-ax.set_xlabel('Time (mn)')
-ax.set_ylabel('Trip duration in current traffic')
+def main():
+    parser = argparse.ArgumentParser(description='An argparse snippet.')
 
-plt.show()
-# TODO: save figure in a png file ?
+    parser.add_argument("fileargs", nargs="*", metavar="FILE",
+            help="CSV files to plot.")
+
+    args = parser.parse_args()
+
+    plot_traffic(args.fileargs)
+
+if __name__ == '__main__':
+    main()
+
