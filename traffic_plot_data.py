@@ -3,6 +3,7 @@
 
 import pandas as pd
 import argparse
+import matplotlib.pyplot as plt
 
 from matplotlib.dates import DateFormatter
 
@@ -12,7 +13,8 @@ def plot_traffic(file_path_list):
     df = pd.concat((pd.read_csv(file_path) for file_path in file_path_list), ignore_index=True)
     print(df)
 
-    #df.plot(x='datetime', y='duration')
+    df.plot(x='datetime', y='duration')
+    plt.show()
 
     #fig.autofmt_xdate()
     #formatter = DateFormatter('%H:%M')

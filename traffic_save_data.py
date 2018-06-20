@@ -40,6 +40,7 @@ def record_traffic(config):
 
     # TODO: improve the next 2 lines (create the data file)...
     fd = open(data_path, 'w')
+    fd.write("datetime,duration\n")
     fd.close()
 
     print()
