@@ -52,7 +52,7 @@ def record_traffic(config):
         duration = get_duration(request_url)
 
         print("{} -> trafic time at {}: {:0.1f} mn".format(config['path_id'], date_str, duration))
-        data = "{} {:0.1f}\n".format(date_str, duration)
+        data = "{},{:0.1f}\n".format(date_str, duration)
 
         fd = open(data_path, 'a')
         fd.write(data)
