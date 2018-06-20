@@ -13,10 +13,10 @@ Go [there](https://console.developers.google.com/apis/credentials/key/) to manag
 Use cron to launch the script periodically on a Unix system: ```crontab -e```::
 
     # Everyday at 16:00
-    16 0 * * *       ~/traffic_save_data.py -c config_1.yaml
+    0 16 * * *       ~/traffic_save_data.py -c config_1.yaml
 
     # Every week days at 7:30
-    7 30 * * 1-5     ~/traffic_save_data.py -c config_2.yaml
+    30 7 * * 1-5     ~/traffic_save_data.py -c config_2.yaml
 
 
 Use ```crontab -l``` to check.
