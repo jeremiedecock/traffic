@@ -24,7 +24,7 @@ api_key = np.genfromtxt('api.key', dtype='unicode')
 
 # TODO: improve the next 3 lines: set a duration instead a end time and make it configurable to be able to launch the script several times per day with different durations...
 now = datetime.now()
-end_hour, end_min = 21, 0
+end_hour, end_min = 13, 0
 end = now.replace(hour=end_hour, minute=end_min, second=0, microsecond=0)
 
 times = []
