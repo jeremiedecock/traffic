@@ -8,13 +8,22 @@ import time
 from datetime import datetime
 from urllib.request import urlopen
 
+# TODO
+# - fix the datetime format
+# - use a configuration file
+# - allow multiple recording per day
+#   - change the stop criteria (duration instead end time) ?
+# - allow multiple paths per request (+ mention the path id in the csv file...) -> one configuration file per path ?
+# - set way points
+# - finish the plot script
+
 # Get the Google Maps API private key
 api_key = np.genfromtxt('api.key', dtype='unicode')
 
 # TODO: put the 4 next variables in an external configuration file
 #origin = 'Greenwich,England'
 #destination = 'Stockholm,Sweden'
-origin = '48.874016,2.295109'     # GPS coordinates
+origin = '48.874016,2.295109'       # GPS coordinates
 destination = '48.853157,2.369259'  # GPS coordinates
 request_url = 'https://maps.googleapis.com/maps/api/distancematrix/json?origins=%s&destinations=%s&departure_time=now&traffic_model=best_guess&key=%s' % (origin, destination, api_key)
 wait_time_sec = 180  # in secs
@@ -35,7 +44,7 @@ times = []
 durations = []
 
 # TODO: improve the next 3 lines (create the data file)...
-data_file = 'traffic_archive/traffic_' + now.strftime('%Y-%m-%d') + '.csv'
+data_file = 'traffic_archive/traffic_' + now.strftime('%Y-%m-%d_%H-%M') + '.csv'
 fd = open(data_file, 'w')
 fd.close()
 
