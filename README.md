@@ -21,3 +21,9 @@ Use cron to launch the script periodically on a Unix system: ```crontab -e```::
 
 
 Use ```crontab -l``` to check.
+
+## Example
+
+The following example show the aggregated trip duration measured during 2 months (weekdays only between 4pm and 8pm) on a small portion of a local road (near Paris in France).
+
+<img src="example.png">
