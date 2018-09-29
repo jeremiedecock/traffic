@@ -22,15 +22,13 @@ def plot_traffic(file_path_list):
     ts.groupby(ts.index.start_time.time).quantile(0.95).plot(ax=ax, color="blue", alpha=0.5, style=":")
     ts.groupby(ts.index.start_time.time).quantile(0.05).plot(ax=ax, color="blue", alpha=0.5, style=":")
 
-    ax.set_xlabel('Time')
-    ax.set_ylabel('Trip duration (mn)');
-
     #fig.autofmt_xdate()
     #formatter = DateFormatter('%H:%M')
     #ax.xaxis.set_major_formatter(formatter)
     #ax.plot(times, durations, 'ro')
+
     ax.set_xlabel('Time')
-    ax.set_ylabel('Estimation of trip duration')
+    ax.set_ylabel('Estimated trip duration (mn)')
 
     plt.show()
 
@@ -39,8 +37,7 @@ def plot_traffic(file_path_list):
 def main():
     parser = argparse.ArgumentParser(description='An argparse snippet.')
 
-    parser.add_argument("fileargs", nargs="*", metavar="FILE",
-            help="CSV files to plot.")
+    parser.add_argument("fileargs", nargs="*", metavar="FILE", help="CSV files to plot.")
 
     args = parser.parse_args()
 
