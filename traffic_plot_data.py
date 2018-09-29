@@ -15,12 +15,28 @@ def plot_traffic(file_path_list):
 
     ts = ts.resample('1min', kind='period').mean()
 
-    ax = ts.groupby(ts.index.start_time.time).mean().plot(y='duration', figsize=(18, 12), color="red")
-    ts.groupby(ts.index.start_time.time).median().plot(ax=ax, color="green")
-    ts.groupby(ts.index.start_time.time).quantile(0.25).plot(ax=ax, color="blue", alpha=0.75, style="--")
-    ts.groupby(ts.index.start_time.time).quantile(0.75).plot(ax=ax, color="blue", alpha=0.75, style="--")
-    ts.groupby(ts.index.start_time.time).quantile(0.95).plot(ax=ax, color="blue", alpha=0.5, style=":")
-    ts.groupby(ts.index.start_time.time).quantile(0.05).plot(ax=ax, color="blue", alpha=0.5, style=":")
+    ts_mean = ts.groupby(ts.index.start_time.time).mean()
+    ts_median = ts.groupby(ts.index.start_time.time).median()
+    ts_quartile_1 = ts.groupby(ts.index.start_time.time).quantile(0.25)
+    ts_quartile_3 = ts.groupby(ts.index.start_time.time).quantile(0.75)
+    ts_percentile_5 = ts.groupby(ts.index.start_time.time).quantile(0.05)
+    ts_percentile_95 = ts.groupby(ts.index.start_time.time).quantile(0.95)
+    ts_min = ts.groupby(ts.index.start_time.time).min()
+    ts_max = ts.groupby(ts.index.start_time.time).max()
+
+    ax = ts_mean.plot(y='duration', figsize=(18, 12), color="red", label="mean", alpha=0.75)
+    ts_median.plot(ax=ax, color="blue", label="median", alpha=0.75)
+    ts_quartile_1.plot(ax=ax, color="blue", alpha=0.5, style="--", label="1st quartile")
+    ts_quartile_3.plot(ax=ax, color="blue", alpha=0.5, style="--", label="3rd quartile")
+    ts_percentile_5.plot(ax=ax, color="blue", alpha=0.25, style=":", label="5th percentile")
+    ts_percentile_95.plot(ax=ax, color="blue", alpha=0.25, style=":", label="95th percentile")
+    ts_min.plot(ax=ax, color="black", alpha=0.2, style=":", label="min")
+    ts_max.plot(ax=ax, color="black", alpha=0.2, style=":", label="max")
+
+    plt.fill_between(ts_percentile_5.index, ts_percentile_5.values, ts_percentile_95.values, facecolor='blue', alpha=0.1)
+    plt.fill_between(ts_quartile_1.index, ts_quartile_1.values, ts_quartile_3.values, facecolor='blue', alpha=0.1)
+
+    ax.legend()
 
     #fig.autofmt_xdate()
     #formatter = DateFormatter('%H:%M')
