@@ -1,4 +1,5 @@
-# traffic
+# Traffic
+
 Estimate commuting time with traffic conditions using Google Maps API.
 Saving the travel time every XX minutes to create a Traffic vs Time curve. 
 The idea is to find the optimum time to leave from work and look for day, month, weather conditions correlation with traffic.
