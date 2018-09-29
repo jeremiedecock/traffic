@@ -1,27 +1,39 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import pandas as pd
 import argparse
 import matplotlib.pyplot as plt
+import os
+import pandas as pd
 
 from matplotlib.dates import DateFormatter
 
 def plot_traffic(file_path_list):
     print(file_path_list)
 
-    df = pd.concat((pd.read_csv(file_path) for file_path in file_path_list), ignore_index=True)
-    print(df)
+    ts = pd.concat((pd.read_csv(file_path, index_col=0, parse_dates=[0], squeeze=True) for file_path in file_path_list))
 
-    df.plot(x='datetime', y='duration')
-    plt.show()
+    ts = ts.resample('1min', kind='period').mean()
+
+    ax = ts.groupby(ts.index.start_time.time).mean().plot(y='duration', figsize=(18, 12), color="red")
+    ts.groupby(ts.index.start_time.time).median().plot(ax=ax, color="green")
+    ts.groupby(ts.index.start_time.time).quantile(0.25).plot(ax=ax, color="blue", alpha=0.75, style="--")
+    ts.groupby(ts.index.start_time.time).quantile(0.75).plot(ax=ax, color="blue", alpha=0.75, style="--")
+    ts.groupby(ts.index.start_time.time).quantile(0.95).plot(ax=ax, color="blue", alpha=0.5, style=":")
+    ts.groupby(ts.index.start_time.time).quantile(0.05).plot(ax=ax, color="blue", alpha=0.5, style=":")
+
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Trip duration (mn)');
 
     #fig.autofmt_xdate()
     #formatter = DateFormatter('%H:%M')
     #ax.xaxis.set_major_formatter(formatter)
     #ax.plot(times, durations, 'ro')
-    #ax.set_xlabel('Time (mn)')
-    #ax.set_ylabel('Trip duration in current traffic')
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Estimation of trip duration')
+
+    plt.show()
+
     ## TODO: save figure in a png file ?
 
 def main():
