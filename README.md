@@ -11,13 +11,15 @@ Go [there](https://console.developers.google.com/apis/dashboard) to watch the Go
 
 Go [there](https://console.developers.google.com/apis/credentials/key/) to manage your Google API keys.
 
-Use cron to launch the script periodically on a Unix system: ```crontab -e```::
+Use cron to launch the script periodically on a Unix system ```crontab -e```:
 
-    # Everyday at 16:00
-    0 16 * * *       python3 ~/traffic_save_data.py -c config_1.yaml
+```
+# Everyday at 16:00
+0 16 * * *       python3 ~/traffic_save_data.py -c config_1.yaml
 
-    # Every week days at 7:30
-    30 7 * * 1-5     python3 ~/traffic_save_data.py -c config_2.yaml
+# Every week days at 7:30
+30 7 * * 1-5     python3 ~/traffic_save_data.py -c config_2.yaml
+```
 
 
 Use ```crontab -l``` to check.
