@@ -44,6 +44,7 @@ def record_traffic(config):
     fd.close()
 
     print()
+    print("PATH = https://www.google.com/maps/dir/'{}'/'{}'/".format(config['origin'], config['destination']))
     print('NOW =', now)
     print('END TIME =', end_time)
 
