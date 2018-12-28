@@ -4,6 +4,7 @@
 import numpy as np
 import json
 import os
+import sys
 import yaml
 import time
 import argparse
@@ -19,8 +20,14 @@ from urllib.request import urlopen
 def get_duration(request_url):
     content = urlopen(request_url).read().decode('utf8')
     data = json.loads(content)
-    #print(data)
-    duration = data['rows'][0]['elements'][0]['duration_in_traffic']['value']
+
+    try:
+        duration = data['rows'][0]['elements'][0]['duration_in_traffic']['value']
+    except Exception as e:
+        print(data, file=sys.stderr)
+        print(e, file=sys.stderr)
+        sys.exit(1)
+
     return duration / 60.
 
 
